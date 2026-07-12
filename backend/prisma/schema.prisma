@@ -1,0 +1,120 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  STUDENT
+  FACULTY
+  INSTITUTION
+  SECRETARIAT
+  ADMIN
+}
+
+enum MembershipType {
+  FOUNDATIONAL
+  ASSOCIATE
+  FULL
+  CORPORATE
+}
+
+model User {
+  id            String   @id @default(uuid())
+  email         String   @unique
+  passwordHash  String
+  fullName      String
+  role          UserRole @default(STUDENT)
+  institution   Institution? @relation(fields: [institutionId], references: [id])
+  institutionId String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([institutionId])
+  @@index([role])
+}
+
+model Institution {
+  id             String         @id @default(uuid())
+  name           String
+  logoUrl        String?
+  membershipType MembershipType @default(FOUNDATIONAL)
+  country        String
+  users          User[]
+  joinedAt       DateTime       @default(now())
+  metadata       Json?
+
+  @@index([membershipType])
+}
+
+model Program {
+  id            String    @id @default(uuid())
+  slug          String    @unique
+  title         String
+  summary       String
+  body          String
+  heroImageUrl  String?
+  publishedAt   DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([publishedAt])
+}
+
+model NewsPost {
+  id            String    @id @default(uuid())
+  slug          String    @unique
+  title         String
+  excerpt       String
+  body          String
+  authorName    String
+  coverImageUrl String?
+  category      String?
+  publishedAt   DateTime?
+  createdAt     DateTime  @default(now())
+
+  @@index([publishedAt])
+  @@index([category])
+}
+
+model Partner {
+  id         String  @id @default(uuid())
+  name       String
+  logoUrl    String
+  websiteUrl String?
+  featured   Boolean @default(false)
+
+  @@index([featured])
+}
+
+model KnowledgeResource {
+  id               String    @id @default(uuid())
+  title            String
+  summary          String
+  fileUrl          String
+  category         String
+  tags             String[]
+  isFullMemberOnly Boolean   @default(false)
+  publishedAt      DateTime?
+  createdAt        DateTime  @default(now())
+
+  // Full-text search: a `tsvector` generated column + GIN index is added via
+  // a raw-SQL migration once content volume warrants it (see
+  // backend/src/database/migrations).
+  @@index([category])
+  @@index([isFullMemberOnly])
+}
+
+model AnalyticsEvent {
+  id         String   @id @default(uuid())
+  eventName  String
+  path       String?
+  userId     String?
+  metadata   Json?
+  occurredAt DateTime @default(now())
+
+  @@index([eventName, occurredAt])
+}
