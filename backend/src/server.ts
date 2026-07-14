@@ -4,12 +4,19 @@ import { createApp } from "./app";
 import { env } from "./config/env";
 import { logger } from "./common/utils/logger";
 import { prisma } from "./config/database";
+import { startKeepAlive } from "./common/utils/keepAlive";
 
 async function main() {
   const app = createApp();
 
   const server = app.listen(env.PORT, () => {
     logger.info(`NDIP API listening on port ${env.PORT} (${env.NODE_ENV})`);
+
+    // Keep Render free-tier alive by self-pinging /health every 14 min
+    const selfUrl =
+      process.env["RENDER_EXTERNAL_URL"] ??
+      `http://localhost:${env.PORT}`;
+    startKeepAlive(selfUrl);
   });
 
   const shutdown = async (signal: string) => {
