@@ -4,7 +4,7 @@
  * free-tier instance never idles and spins down (idle timeout = 15 min).
  */
 
-const PING_INTERVAL_MS = 14 * 60 * 1000; // 14 minutes
+const PING_INTERVAL_MS = 8 * 60 * 1000; // 8 minutes
 
 export function startKeepAlive(serverUrl: string): void {
   // Only run in production — no need to self-ping during local dev
