@@ -3,8 +3,10 @@
     "target": "ES2021",
     "module": "commonjs",
     "moduleResolution": "node",
+    "ignoreDeprecations": "5.0",
     "lib": ["ES2021"],
     "outDir": "dist",
+    "rootDir": "..",
     "declaration": false,
     "strict": true,
     "noUncheckedIndexedAccess": true,
@@ -12,9 +14,8 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"],
+      "@/*": ["./src/*"],
       "@ndip/shared/*": ["../shared/*"]
     }
   },
